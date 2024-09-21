@@ -1,7 +1,9 @@
 package com.auto.inventorymanagement.controllers;
 
+import com.auto.inventorymanagement.DTO.assignRoleDTO;
 import com.auto.inventorymanagement.models.Role;
 import com.auto.inventorymanagement.models.User;
+import com.auto.inventorymanagement.repositories.RoleRepository;
 import com.auto.inventorymanagement.repositories.UserRepository;
 import com.auto.inventorymanagement.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +20,19 @@ import java.util.List;
 public class UserController {
     private UserService userService;
     private RestTemplate restTemplate;
-    private final UserRepository userRepository;
+
 
     @Autowired
     public UserController(UserService userService,
-                          RestTemplate restTemplate,
-                          UserRepository userRepository) {
+                          RestTemplate restTemplate
+                          ) {
         this.userService = userService;
         this.restTemplate = restTemplate;
-        this.userRepository = userRepository;
     }
     @PostMapping("/signup")
     public ResponseEntity<User> signup(@RequestBody User user) {
         ResponseEntity<User> response = new ResponseEntity<>(
-                userRepository.save(user), HttpStatus.CREATED
+                userService.signUp(user), HttpStatus.CREATED
         );
         return response;
     }
@@ -50,7 +51,21 @@ public class UserController {
     @PostMapping("addRole")
     public ResponseEntity<Role> addRole(@RequestBody Role role) {
         ResponseEntity<Role> response = new ResponseEntity<>(
-                userRepository.save(role),HttpStatus.CREATED
+                userService.createRole(role),HttpStatus.CREATED
+        );
+        return response;
+    }
+    @GetMapping("/role")
+    public ResponseEntity<List<Role>> getAllRole() {
+        ResponseEntity<List<Role>> response = new ResponseEntity<>(
+                userService.getAllRole(),HttpStatus.FOUND
+        );
+        return response;
+    }
+    @PatchMapping("/assignRole")
+    public ResponseEntity<List<User>> assignRole(@RequestBody assignRoleDTO request) {
+                ResponseEntity<List<User>> response = new ResponseEntity<>(
+                userService.assignRole(request.getId(), request.getRole()), HttpStatus.CREATED
         );
         return response;
     }

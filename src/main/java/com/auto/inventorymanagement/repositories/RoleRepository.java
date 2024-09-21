@@ -7,21 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.lang.annotation.Native;
 import java.util.List;
 import java.util.Optional;
+
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
+    List<Role> findAll();
+    Role save(Role role);
+    @Query(value = "select r from Role r where r.title like %:title%")
+    Optional<Role> findByTitle(@Param("title") String title);
 
-    List<User> findAll();
-    Optional<User> findById(Long Id);
-    Optional<User> findByEmail(String email);
-
-    User save(User user);
-    //Optional<List<User>> findBy(Role role);
-    void deleteById(Long Id);
-
-   List<User> findByRole_Title(@Param("role") String role);
-
-
+    //List<User> findUsersBy(Role role);
 }

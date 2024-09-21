@@ -2,10 +2,12 @@ package com.auto.inventorymanagement.services;
 
 import com.auto.inventorymanagement.models.Role;
 import com.auto.inventorymanagement.models.User;
+import com.auto.inventorymanagement.repositories.RoleRepository;
 import com.auto.inventorymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -13,9 +15,13 @@ import java.util.Optional;
 @Service
 public class UserService implements UserServiceInterface {
     private UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       RoleRepository roleRepository) {
         this.userRepository=userRepository;
+        this.roleRepository = roleRepository;
     }
     @Override
     public User signUp(User user) throws RuntimeException {
@@ -54,6 +60,25 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public Role createRole(Role role) {
-        return userRepository.save(role);
+        return roleRepository.save(role);
+    }
+
+    @Override
+    public List<User> assignRole(Long Id, String roleTitle) throws NoSuchElementException{
+        Optional<Role> optionalRole = roleRepository.findByTitle(roleTitle);
+        Optional<User> optionalUser = userRepository.findById(Id);
+        if(optionalRole.isPresent()) {
+            optionalUser.get().setRole(optionalRole.get());
+        }else {
+            throw new NoSuchElementException("Role " + roleTitle + "doesn't exist");
+        }
+        userRepository.save(optionalUser.get());
+        return userRepository.findByRole_Title(roleTitle);
+        //return null;
+    }
+
+    @Override
+    public List<Role> getAllRole() {
+        return roleRepository.findAll();
     }
 }

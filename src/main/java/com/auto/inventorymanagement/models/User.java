@@ -13,6 +13,7 @@ public class User extends BaseModel{
     private String lastName;
     private String email;
     private String password;
-    @OneToMany(cascade = CascadeType.REMOVE)
-    private List<Role> roles;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "role_id")
+    private Role role;
 }

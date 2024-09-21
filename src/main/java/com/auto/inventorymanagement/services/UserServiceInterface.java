@@ -16,4 +16,6 @@ public interface UserServiceInterface {
     public User getSingleUser(Long Id);
     public User assignRole(Long Id);
     public Role createRole(Role role);
+    public List<User> assignRole(Long Id, String role);
+    public List<Role> getAllRole();
 }
